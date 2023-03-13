@@ -16,11 +16,7 @@ import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
-import * as nestAccessControl from "nest-access-control";
-import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 import { KarzaPanService } from "../karzaPan.service";
-import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { KarzaPanCreateInput } from "./KarzaPanCreateInput";
 import { KarzaPanWhereInput } from "./KarzaPanWhereInput";
 import { KarzaPanWhereUniqueInput } from "./KarzaPanWhereUniqueInput";
@@ -28,24 +24,10 @@ import { KarzaPanFindManyArgs } from "./KarzaPanFindManyArgs";
 import { KarzaPanUpdateInput } from "./KarzaPanUpdateInput";
 import { KarzaPan } from "./KarzaPan";
 
-@swagger.ApiBearerAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class KarzaPanControllerBase {
-  constructor(
-    protected readonly service: KarzaPanService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  constructor(protected readonly service: KarzaPanService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: KarzaPan })
-  @nestAccessControl.UseRoles({
-    resource: "KarzaPan",
-    action: "create",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async create(@common.Body() data: KarzaPanCreateInput): Promise<KarzaPan> {
     return await this.service.create({
       data: data,
@@ -57,18 +39,9 @@ export class KarzaPanControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [KarzaPan] })
   @ApiNestedQuery(KarzaPanFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: "KarzaPan",
-    action: "read",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findMany(@common.Req() request: Request): Promise<KarzaPan[]> {
     const args = plainToClass(KarzaPanFindManyArgs, request.query);
     return this.service.findMany({
@@ -81,18 +54,9 @@ export class KarzaPanControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: KarzaPan })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "KarzaPan",
-    action: "read",
-    possession: "own",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findOne(
     @common.Param() params: KarzaPanWhereUniqueInput
   ): Promise<KarzaPan | null> {
@@ -112,18 +76,9 @@ export class KarzaPanControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: KarzaPan })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "KarzaPan",
-    action: "update",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async update(
     @common.Param() params: KarzaPanWhereUniqueInput,
     @common.Body() data: KarzaPanUpdateInput
@@ -151,14 +106,6 @@ export class KarzaPanControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: KarzaPan })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: "KarzaPan",
-    action: "delete",
-    possession: "any",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async delete(
     @common.Param() params: KarzaPanWhereUniqueInput
   ): Promise<KarzaPan | null> {
