@@ -9,11 +9,13 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
+import { ArgsType, Field } from "@nestjs/graphql";
+import { KarzaPanCreateInput } from "./KarzaPanCreateInput";
 
-@Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
-})
-export class UserModuleBase {}
+@ArgsType()
+class CreateKarzaPanArgs {
+  @Field(() => KarzaPanCreateInput, { nullable: false })
+  data!: KarzaPanCreateInput;
+}
+
+export { CreateKarzaPanArgs as CreateKarzaPanArgs };

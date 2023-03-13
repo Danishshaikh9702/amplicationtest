@@ -21,5 +21,6 @@ model User {
 model KarzaPan {
   createdAt DateTime @default(now())
   id        String   @id @default(cuid())
+  panNumber String   @unique
   updatedAt DateTime @updatedAt
 }
