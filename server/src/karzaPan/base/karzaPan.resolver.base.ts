@@ -13,30 +13,17 @@ import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import * as nestAccessControl from "nest-access-control";
-import * as gqlACGuard from "../../auth/gqlAC.guard";
-import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as common from "@nestjs/common";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { CreateKarzaPanArgs } from "./CreateKarzaPanArgs";
+import { UpdateKarzaPanArgs } from "./UpdateKarzaPanArgs";
 import { DeleteKarzaPanArgs } from "./DeleteKarzaPanArgs";
 import { KarzaPanFindManyArgs } from "./KarzaPanFindManyArgs";
 import { KarzaPanFindUniqueArgs } from "./KarzaPanFindUniqueArgs";
 import { KarzaPan } from "./KarzaPan";
 import { KarzaPanService } from "../karzaPan.service";
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => KarzaPan)
 export class KarzaPanResolverBase {
-  constructor(
-    protected readonly service: KarzaPanService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(protected readonly service: KarzaPanService) {}
 
-  @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: "KarzaPan",
-    action: "read",
-    possession: "any",
-  })
   async _karzaPansMeta(
     @graphql.Args() args: KarzaPanFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -50,26 +37,14 @@ export class KarzaPanResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [KarzaPan])
-  @nestAccessControl.UseRoles({
-    resource: "KarzaPan",
-    action: "read",
-    possession: "any",
-  })
   async karzaPans(
     @graphql.Args() args: KarzaPanFindManyArgs
   ): Promise<KarzaPan[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => KarzaPan, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: "KarzaPan",
-    action: "read",
-    possession: "own",
-  })
   async karzaPan(
     @graphql.Args() args: KarzaPanFindUniqueArgs
   ): Promise<KarzaPan | null> {
@@ -81,11 +56,35 @@ export class KarzaPanResolverBase {
   }
 
   @graphql.Mutation(() => KarzaPan)
-  @nestAccessControl.UseRoles({
-    resource: "KarzaPan",
-    action: "delete",
-    possession: "any",
-  })
+  async createKarzaPan(
+    @graphql.Args() args: CreateKarzaPanArgs
+  ): Promise<KarzaPan> {
+    return await this.service.create({
+      ...args,
+      data: args.data,
+    });
+  }
+
+  @graphql.Mutation(() => KarzaPan)
+  async updateKarzaPan(
+    @graphql.Args() args: UpdateKarzaPanArgs
+  ): Promise<KarzaPan | null> {
+    try {
+      return await this.service.update({
+        ...args,
+        data: args.data,
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new apollo.ApolloError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => KarzaPan)
   async deleteKarzaPan(
     @graphql.Args() args: DeleteKarzaPanArgs
   ): Promise<KarzaPan | null> {
