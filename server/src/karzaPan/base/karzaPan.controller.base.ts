@@ -52,6 +52,8 @@ export class KarzaPanControllerBase {
       select: {
         createdAt: true,
         id: true,
+        mobileNumber: true,
+        panNumber: true,
         updatedAt: true,
       },
     });
@@ -76,6 +78,8 @@ export class KarzaPanControllerBase {
       select: {
         createdAt: true,
         id: true,
+        mobileNumber: true,
+        panNumber: true,
         updatedAt: true,
       },
     });
@@ -101,6 +105,8 @@ export class KarzaPanControllerBase {
       select: {
         createdAt: true,
         id: true,
+        mobileNumber: true,
+        panNumber: true,
         updatedAt: true,
       },
     });
@@ -135,6 +141,8 @@ export class KarzaPanControllerBase {
         select: {
           createdAt: true,
           id: true,
+          mobileNumber: true,
+          panNumber: true,
           updatedAt: true,
         },
       });
@@ -168,6 +176,8 @@ export class KarzaPanControllerBase {
         select: {
           createdAt: true,
           id: true,
+          mobileNumber: true,
+          panNumber: true,
           updatedAt: true,
         },
       });

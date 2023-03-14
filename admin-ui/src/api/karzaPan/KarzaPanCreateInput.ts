@@ -1,1 +1,4 @@
-export type KarzaPanCreateInput = {};
+export type KarzaPanCreateInput = {
+  mobileNumber: number;
+  panNumber: string;
+};

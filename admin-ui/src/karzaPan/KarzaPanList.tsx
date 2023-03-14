@@ -14,6 +14,8 @@ export const KarzaPanList = (props: ListProps): React.ReactElement => {
       <Datagrid rowClick="show">
         <DateField source="createdAt" label="Created At" />
         <TextField label="ID" source="id" />
+        <TextField label="mobileNumber" source="mobileNumber" />
+        <TextField label="panNumber" source="panNumber" />
         <DateField source="updatedAt" label="Updated At" />
       </Datagrid>
     </List>
