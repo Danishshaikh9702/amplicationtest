@@ -9,19 +9,13 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field } from "@nestjs/graphql";
-import { ApiProperty } from "@nestjs/swagger";
-import { IsString } from "class-validator";
+import { ArgsType, Field } from "@nestjs/graphql";
+import { KarzaPanCreateInput } from "./KarzaPanCreateInput";
 
-@InputType()
-class KarzaPanCreateInput {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  panNumber!: string;
+@ArgsType()
+class CreateKarzaPanArgs {
+  @Field(() => KarzaPanCreateInput, { nullable: false })
+  data!: KarzaPanCreateInput;
 }
 
-export { KarzaPanCreateInput as KarzaPanCreateInput };
+export { CreateKarzaPanArgs as CreateKarzaPanArgs };

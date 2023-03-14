@@ -18,6 +18,9 @@ import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { CreateKarzaPanArgs } from "./CreateKarzaPanArgs";
+import { UpdateKarzaPanArgs } from "./UpdateKarzaPanArgs";
 import { DeleteKarzaPanArgs } from "./DeleteKarzaPanArgs";
 import { KarzaPanFindManyArgs } from "./KarzaPanFindManyArgs";
 import { KarzaPanFindUniqueArgs } from "./KarzaPanFindUniqueArgs";
@@ -78,6 +81,47 @@ export class KarzaPanResolverBase {
       return null;
     }
     return result;
+  }
+
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => KarzaPan)
+  @nestAccessControl.UseRoles({
+    resource: "KarzaPan",
+    action: "create",
+    possession: "any",
+  })
+  async createKarzaPan(
+    @graphql.Args() args: CreateKarzaPanArgs
+  ): Promise<KarzaPan> {
+    return await this.service.create({
+      ...args,
+      data: args.data,
+    });
+  }
+
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => KarzaPan)
+  @nestAccessControl.UseRoles({
+    resource: "KarzaPan",
+    action: "update",
+    possession: "any",
+  })
+  async updateKarzaPan(
+    @graphql.Args() args: UpdateKarzaPanArgs
+  ): Promise<KarzaPan | null> {
+    try {
+      return await this.service.update({
+        ...args,
+        data: args.data,
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new apollo.ApolloError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
   }
 
   @graphql.Mutation(() => KarzaPan)

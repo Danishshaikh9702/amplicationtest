@@ -1,1 +1,3 @@
-export type KarzaPanUpdateInput = {};
+export type KarzaPanUpdateInput = {
+  panNumber?: string;
+};
